@@ -1,4 +1,4 @@
-# 🎬 AI Video Enhancer — For the Rest of Us
+﻿# 🎬 AI Video Enhancer — For the Rest of Us
 
 > **Everyone builds video enhancers for beefy GPUs and high-end PCs.**
 > **I built this one for people like me — with a basic laptop and a dream.** 💻✨
@@ -32,12 +32,6 @@ Upload any video through your browser → pick your settings → get back an **e
 
 ---
 
-## 🖥️ Screenshots
-
-*Coming soon — upload your own and submit a PR!*
-
----
-
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -47,9 +41,9 @@ Upload any video through your browser → pick your settings → get back an **e
 
 ### Installation
 
-`ash
+```bash
 # Clone this repo
-git clone https://github.com/YOUR_USERNAME/ai-video-enhancer.git
+git clone https://github.com/devildai/ai-video-enhancer.git
 cd ai-video-enhancer
 
 # Install Python dependencies
@@ -57,7 +51,7 @@ pip install -r requirements.txt
 
 # Run the app
 python -m app.main
-`
+```
 
 The app will automatically open your browser to `http://127.0.0.1:8000` 🎉
 
@@ -81,7 +75,7 @@ On first run, the app will **automatically download** the AI model weights (~26M
 
 ## 🏗️ Architecture
 
-`
+```text
 Browser (Dark Theme UI)
     ↕ Upload + SSE/WebSocket Progress
 FastAPI Backend
@@ -91,7 +85,7 @@ Pipeline Runner
 FFmpeg Decode → AI Enhance (Real-ESRGAN / Temporal VSR) → AI Interpolate (RIFE v4) → FFmpeg Encode
     ↓
 Enhanced MP4 + Original Audio
-`
+```
 
 ---
 
@@ -113,14 +107,14 @@ Let's be real — CPU inference is slow. But it works!
 
 The project includes **203 tests** across unit and integration suites:
 
-`ash
+```bash
 # Run all tests
 pytest
 
 # Run specific test suites
 pytest tests/unit/          # Unit tests (116)
 pytest tests/e2e/           # End-to-end tests (87)
-`
+```
 
 ---
 
