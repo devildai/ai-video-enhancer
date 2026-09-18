@@ -1,0 +1,43 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.class
+*.so
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Pytest / Cache
+.pytest_cache/
+.coverage
+htmlcov/
+.agents/
+
+# Video Enhancement temporary scratch / cache / output directories
+uploads/*
+!uploads/.gitkeep
+outputs/*
+!outputs/.gitkeep
+previews/*
+!previews/.gitkeep
+temp/*
+!temp/.gitkeep
+
+# Model weights (Large files > 10MB, auto-downloaded on first run)
+models/enhancer/*.onnx
+models/enhancer/*.pth
+models/rife/*.onnx
+models/rife/*.pth
+*.tmp
+
+# Operating System Files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.BIN/
+.DS_Store
+*.swp

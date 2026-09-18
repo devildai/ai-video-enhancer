@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="AI Video Enhancer - Neural Detail Super-Resolution and Optical Flow Frame Interpolation" />
+  <meta name="theme-color" content="#0b0f19" />
+  <title>AI Video Enhancer — Neural Detail & Frame Interpolation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <link rel="icon" type="image/svg+xml" href="/static/assets/favicon.svg" />
+</head>
+<body class="dark-theme">
+  <!-- Background Glow & Grid Ornaments -->
+  <div class="bg-glow-top" aria-hidden="true"></div>
+  <div class="bg-glow-bottom" aria-hidden="true"></div>
+  <div class="bg-grid-pattern" aria-hidden="true"></div>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="header-content">
+      <div class="brand-group">
+        <div class="brand-icon-wrapper">
+          <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="23 7 16 12 23 17 23 7"></polygon>
+            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+            <circle cx="8.5" cy="12" r="2.5" fill="currentColor" opacity="0.3"></circle>
+            <path d="M11.5 9l1-2 1 2 2 1-2 1-1 2-1-2-2-1 2-1z" fill="currentColor"></path>
+          </svg>
+          <div class="brand-pulse"></div>
+        </div>
+        <div class="brand-text">
+          <div class="brand-title-row">
+            <h1 class="brand-title">AI Video Enhancer</h1>
+            <span class="version-badge">v1.0.0 CPU</span>
+          </div>
+          <p class="brand-subtitle">Temporal Detail Restoration &amp; Optical Flow Interpolation</p>
+        </div>
+      </div>
+
+      <div class="system-status" id="system-status-pill">
+        <span class="status-dot online"></span>
+        <span class="status-text">CPU Acceleration Ready</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="main-container">
+
+    <!-- Global Alert Banner (Hidden by default) -->
+    <div id="global-alert" class="alert-banner hidden" role="alert">
+      <div class="alert-icon-wrap">
+        <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      <div class="alert-content">
+        <h4 class="alert-title" id="alert-title">Notification</h4>
+        <p class="alert-message" id="alert-message">Something occurred.</p>
+      </div>
+      <button class="alert-close" id="alert-close-btn" aria-label="Dismiss alert">&times;</button>
+    </div>
+
+    <!-- VIEW 1: UPLOAD DROPZONE -->
+    <section id="upload-section" class="workspace-section card-surface">
+      <div class="section-header">
+        <h2 class="section-title">Upload Video</h2>
+        <p class="section-subtitle">Select a video clip to enhance resolution, restore neural textures, and multiply frame rate.</p>
+      </div>
+
+      <div id="dropzone" class="dropzone-area" tabindex="0" role="region" aria-label="Video File Drop Zone">
+        <div class="dropzone-inner">
+          <div class="dropzone-icon-container">
+            <svg class="cloud-upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+              <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path>
+              <path d="M12 12v9"></path>
+              <path d="m16 16-4-4-4 4"></path>
+            </svg>
+          </div>
+          <h3 class="dropzone-heading">Drag and drop your video file here</h3>
+          <p class="dropzone-subheading">or click below to choose a file from your computer</p>
+          
+          <button type="button" class="btn btn-secondary btn-browse" id="browse-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+            <span>Browse Video Files</span>
+          </button>
+          <input type="file" id="file-input" accept="video/mp4,video/x-matroska,video/quicktime,video/x-msvideo,video/webm,.mp4,.mkv,.avi,.mov,.webm" hidden />
+
+          <div class="dropzone-footer">
+            <div class="format-tags">
+              <span class="tag">MP4</span>
+              <span class="tag">MKV</span>
+              <span class="tag">AVI</span>
+              <span class="tag">MOV</span>
+              <span class="tag">WEBM</span>
+            </div>
+            <p class="cpu-note">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="inline-icon">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              Optimized for clips up to 60 seconds on CPU. Large videos are processed in streaming batches.
+            </p>
+          </div>
+        </div>
+
+        <!-- Uploading overlay indicator -->
+        <div id="upload-progress-overlay" class="upload-overlay hidden">
+          <div class="spinner"></div>
+          <p class="upload-overlay-text" id="upload-status-text">Uploading &amp; probing media container...</p>
+          <div class="upload-progress-bar-track">
+            <div id="upload-progress-fill" class="upload-progress-bar-fill"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: VIDEO INFO, COMPARISON & CONFIGURATION (Revealed after upload) -->
+    <section id="config-section" class="workspace-section hidden">
+      
+      <!-- Video Metadata & Preview Card -->
+      <div class="card-surface video-preview-card">
+        <div class="card-header-bar">
+          <div class="card-title-group">
+            <span class="badge-stage">Step 1</span>
+            <h3 class="card-title" id="loaded-filename">video_input.mp4</h3>
+          </div>
+          <button type="button" class="btn btn-ghost btn-sm" id="btn-change-video" title="Select a different video">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            Change File
+          </button>
+        </div>
+
+        <div class="preview-grid">
+          <!-- Left: Video Player -->
+          <div class="player-wrapper">
+            <div class="video-container">
+              <video id="input-video-player" controls preload="metadata" playsinline>
+                Your browser does not support HTML5 video preview.
+              </video>
+            </div>
+            <div class="player-subbar">
+              <span class="subbar-label">Source Video Preview</span>
+              <span class="subbar-duration" id="meta-duration-display">00:00</span>
+            </div>
+          </div>
+
+          <!-- Right: Metadata Grid -->
+          <div class="metadata-dashboard">
+            <h4 class="metadata-heading">Stream Properties</h4>
+            <div class="metadata-grid">
+              
+              <div class="meta-item">
+                <div class="meta-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                    <line x1="8" y1="21" x2="16" y2="21"></line>
+                    <line x1="12" y1="17" x2="12" y2="21"></line>
+                  </svg>
+                </div>
+                <div class="meta-data">
+                  <span class="meta-label">Resolution</span>
+                  <span class="meta-val" id="meta-resolution">-- × --</span>
+                  <span class="meta-extra" id="meta-aspect">--</span>
+                </div>
+              </div>
+
+              <div class="meta-item">
+                <div class="meta-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                </div>
+                <div class="meta-data">
+                  <span class="meta-label">Frame Rate</span>
+                  <span class="meta-val" id="meta-fps">-- FPS</span>
+                  <span class="meta-extra" id="meta-total-frames">-- frames</span>
+                </div>
+              </div>
+
+              <div class="meta-item">
+                <div class="meta-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                  </svg>
+                </div>
+                <div class="meta-data">
+                  <span class="meta-label">Duration</span>
+                  <span class="meta-val" id="meta-duration">--s</span>
+                  <span class="meta-extra" id="meta-filesize">-- MB</span>
+                </div>
+              </div>
+
+              <div class="meta-item">
+                <div class="meta-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                  </svg>
+                </div>
+                <div class="meta-data">
+                  <span class="meta-label">Video Codec</span>
+                  <span class="meta-val" id="meta-codec">--</span>
+                  <span class="meta-extra" id="meta-pixfmt">yuv420p</span>
+                </div>
+              </div>
+
+              <div class="meta-item">
+                <div class="meta-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 18V5l12-2v13"></path>
+                    <circle cx="6" cy="18" r="3"></circle>
+                    <circle cx="18" cy="16" r="3"></circle>
+                  </svg>
+                </div>
+                <div class="meta-data">
+                  <span class="meta-label">Audio Stream</span>
+                  <span class="meta-val" id="meta-audio">Preserved</span>
+                  <span class="meta-extra" id="meta-audio-channels">--</span>
+                </div>
+              </div>
+
+              <div class="meta-item">
+                <div class="meta-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                  </svg>
+                </div>
+                <div class="meta-data">
+                  <span class="meta-label">Processing Budget</span>
+                  <span class="meta-val" id="meta-budget">Optimal</span>
+                  <span class="meta-extra">&lt; 500 MB RAM</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Before/After Sample Comparison Section -->
+      <div class="card-surface comparison-card" id="comparison-section">
+        <div class="card-header-bar">
+          <div class="card-title-group">
+            <span class="badge-stage">Step 2</span>
+            <h3 class="card-title">Before / After Neural Sample Comparison</h3>
+          </div>
+          <div class="comparison-actions">
+            <div class="zoom-controls">
+              <button type="button" class="btn-toggle active" id="zoom-1x" aria-label="1x Zoom">1×</button>
+              <button type="button" class="btn-toggle" id="zoom-2x" aria-label="2x Zoom">2×</button>
+            </div>
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-preview-sample">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+              </svg>
+              <span>Generate Sample Preview</span>
+            </button>
+          </div>
+        </div>
+
+        <p class="card-instruction">Drag the interactive slider horizontally or use the left/right arrow keys to compare original details against neural enhanced details.</p>
+
+        <!-- Split Slider Container -->
+        <div class="split-slider-container" id="slider-container" tabindex="0" role="slider" aria-label="Before/After Split Comparison Slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+          
+          <!-- Base Image (Enhanced / After) -->
+          <div class="slider-image-layer enhanced-layer">
+            <img id="enhanced-sample-img" src="" alt="AI Enhanced Sample Frame" loading="lazy" />
+            <span class="slider-badge badge-enhanced">AI Enhanced</span>
+          </div>
+
+          <!-- Overlay Image (Original / Before) with Clip Path -->
+          <div class="slider-image-layer original-layer" id="original-layer">
+            <img id="original-sample-img" src="" alt="Original Sample Frame" loading="lazy" />
+            <span class="slider-badge badge-original">Original Source</span>
+          </div>
+
+          <!-- Draggable Divider Handle -->
+          <div class="slider-divider" id="slider-divider" style="left: 50%;">
+            <div class="divider-line"></div>
+            <div class="divider-handle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="15 18 9 12 15 6"></polyline>
+                <polyline points="9 18 3 12 9 6"></polyline>
+                <polyline points="9 18 15 12 9 6" transform="rotate(180 12 12)"></polyline>
+              </svg>
+            </div>
+            <div class="divider-line"></div>
+          </div>
+
+          <!-- Loading State for Preview Generator -->
+          <div id="sample-loading-overlay" class="sample-loading-overlay hidden">
+            <div class="spinner"></div>
+            <p id="sample-loading-text">Generating AI super-resolved sample frame...</p>
+          </div>
+
+          <!-- Placeholder when sample is not generated yet -->
+          <div id="sample-empty-overlay" class="sample-empty-overlay">
+            <div class="empty-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="12" y1="3" x2="12" y2="21"></line>
+                <polyline points="8 9 5 12 8 15"></polyline>
+                <polyline points="16 9 19 12 16 15"></polyline>
+              </svg>
+            </div>
+            <p>Click <strong>"Generate Sample Preview"</strong> to render a live neural comparison frame, or proceed directly with configuration below.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Enhancement Configuration Presets -->
+      <div class="card-surface config-presets-card">
+        <div class="card-header-bar">
+          <div class="card-title-group">
+            <span class="badge-stage">Step 3</span>
+            <h3 class="card-title">Enhancement Configuration Presets</h3>
+          </div>
+        </div>
+
+        <div class="config-columns">
+          <!-- Column 1: Target Resolution -->
+          <div class="config-group">
+            <div class="config-label-row">
+              <label class="config-title">Target Resolution</label>
+              <span class="config-calc-tag" id="target-res-calc">1920 × 1080 (16:9)</span>
+            </div>
+            <p class="config-hint">AI super-resolves high-frequency detail up to target pixel bounds.</p>
+            
+            <div class="preset-chips" role="radiogroup" aria-label="Resolution Presets">
+              <button type="button" class="chip" data-res="Original" role="radio" aria-checked="false">
+                <span class="chip-name">Original</span>
+                <span class="chip-sub">Source Size</span>
+              </button>
+              <button type="button" class="chip active" data-res="1080p" role="radio" aria-checked="true">
+                <span class="chip-name">1080p</span>
+                <span class="chip-sub">Full HD</span>
+              </button>
+              <button type="button" class="chip" data-res="2K" role="radio" aria-checked="false">
+                <span class="chip-name">2K</span>
+                <span class="chip-sub">1440p QHD</span>
+              </button>
+              <button type="button" class="chip" data-res="4K" role="radio" aria-checked="false">
+                <span class="chip-name">4K</span>
+                <span class="chip-sub">2160p UHD</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Column 2: Target Frame Rate -->
+          <div class="config-group">
+            <div class="config-label-row">
+              <label class="config-title">Target Frame Rate (FPS)</label>
+              <span class="config-calc-tag" id="target-fps-calc">2.0× Frame Interpolation</span>
+            </div>
+            <p class="config-hint">RIFE v4 optical flow synthesizes intermediate motion frames.</p>
+            
+            <div class="preset-chips" role="radiogroup" aria-label="Frame Rate Presets">
+              <button type="button" class="chip" data-fps="Original" role="radio" aria-checked="false">
+                <span class="chip-name">Original</span>
+                <span class="chip-sub">Keep Source</span>
+              </button>
+              <button type="button" class="chip" data-fps="30fps" role="radio" aria-checked="false">
+                <span class="chip-name">30 fps</span>
+                <span class="chip-sub">Standard</span>
+              </button>
+              <button type="button" class="chip active" data-fps="60fps" role="radio" aria-checked="true">
+                <span class="chip-name">60 fps</span>
+                <span class="chip-sub">Smooth 2×</span>
+              </button>
+              <button type="button" class="chip" data-fps="120fps" role="radio" aria-checked="false">
+                <span class="chip-name">120 fps</span>
+                <span class="chip-sub">Ultra High 4×</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 2: Enhancement Mode Selection -->
+        <div class="config-mode-section">
+          <label class="config-title">Neural Enhancement Mode</label>
+          <div class="mode-cards-grid" role="radiogroup" aria-label="Enhancement Mode">
+            
+            <div class="mode-card active" data-mode="quality" tabindex="0" role="radio" aria-checked="true">
+              <div class="mode-card-header">
+                <div class="mode-radio-circle"></div>
+                <div class="mode-info">
+                  <span class="mode-name">Quality Mode</span>
+                  <span class="mode-badge-rec">Recommended</span>
+                </div>
+              </div>
+              <p class="mode-desc">Multi-frame temporal super-resolution with backward optical flow consistency. Eliminates texture shimmering and recovers authentic high-frequency details.</p>
+              <div class="mode-footer">
+                <span class="mode-pill">Temporal Consistency</span>
+                <span class="mode-pill">Flicker-Free</span>
+                <span class="mode-pill">Deep Detail</span>
+              </div>
+            </div>
+
+            <div class="mode-card" data-mode="speed" tabindex="0" role="radio" aria-checked="false">
+              <div class="mode-card-header">
+                <div class="mode-radio-circle"></div>
+                <div class="mode-info">
+                  <span class="mode-name">Speed Mode</span>
+                  <span class="mode-badge-fast">Fastest CPU</span>
+                </div>
+              </div>
+              <p class="mode-desc">Compact per-frame neural network (Real-ESRGAN Compact SRVGGNet). Optimized for rapid CPU inference with sharp edge restoration and low latency.</p>
+              <div class="mode-footer">
+                <span class="mode-pill">Fast Execution</span>
+                <span class="mode-pill">Sharp Edges</span>
+                <span class="mode-pill">Lightweight</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Launch Enhancement CTA Bar -->
+        <div class="config-action-bar">
+          <div class="action-meta-summary">
+            <span class="summary-label">Pipeline Plan:</span>
+            <span class="summary-value" id="pipeline-plan-summary">1080p Full HD • 60 FPS • Quality Mode</span>
+          </div>
+          <div class="action-buttons-group">
+            <button type="button" class="btn btn-primary btn-lg" id="btn-start-process">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+              </svg>
+              <span>Enhance Video</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- VIEW 3: REAL-TIME PROCESSING PROGRESS (Active during job) -->
+    <section id="processing-section" class="workspace-section card-surface hidden">
+      <div class="card-header-bar">
+        <div class="card-title-group">
+          <span class="badge-stage badge-processing">Processing</span>
+          <h3 class="card-title">Enhancing Video Stream</h3>
+        </div>
+        <button type="button" class="btn btn-outline-danger btn-sm" id="btn-cancel-task">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="15" y1="9" x2="9" y2="15"></line>
+            <line x1="9" y1="9" x2="15" y2="15"></line>
+          </svg>
+          Cancel Job
+        </button>
+      </div>
+
+      <!-- Pipeline Stepper Track -->
+      <div class="pipeline-stepper">
+        <div class="step-node active" id="step-demux">
+          <span class="step-num">1</span>
+          <span class="step-label">Audio Demux</span>
+        </div>
+        <div class="step-connector active" id="conn-1"></div>
+        <div class="step-node active" id="step-decode">
+          <span class="step-num">2</span>
+          <span class="step-label">Frame Decode</span>
+        </div>
+        <div class="step-connector" id="conn-2"></div>
+        <div class="step-node" id="step-enhance">
+          <span class="step-num">3</span>
+          <span class="step-label">AI Enhance</span>
+        </div>
+        <div class="step-connector" id="conn-3"></div>
+        <div class="step-node" id="step-interpolate">
+          <span class="step-num">4</span>
+          <span class="step-label">Interpolate</span>
+        </div>
+        <div class="step-connector" id="conn-4"></div>
+        <div class="step-node" id="step-encode">
+          <span class="step-num">5</span>
+          <span class="step-label">Encode MP4</span>
+        </div>
+      </div>
+
+      <!-- Glowing Progress Bar Component -->
+      <div class="progress-bar-container">
+        <div class="progress-header-info">
+          <span class="progress-stage-name" id="stage-description">Initializing streaming pipeline...</span>
+          <span class="progress-percentage" id="progress-percentage-num">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill" style="width: 0%;">
+            <div class="progress-glow-head"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Performance & ETA Dashboard -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <span class="metric-label">Processing Speed</span>
+          <span class="metric-value" id="metric-speed">-- FPS</span>
+          <span class="metric-sub">Rolling frame rate</span>
+        </div>
+
+        <div class="metric-card">
+          <span class="metric-label">Time Remaining</span>
+          <span class="metric-value" id="metric-eta">Estimating...</span>
+          <span class="metric-sub" id="metric-elapsed">Elapsed: 00:00</span>
+        </div>
+
+        <div class="metric-card">
+          <span class="metric-label">Current Frame</span>
+          <span class="metric-value" id="metric-frame-counter">-- / --</span>
+          <span class="metric-sub" id="metric-frame-rate-pct">0% rendered</span>
+        </div>
+
+        <div class="metric-card">
+          <span class="metric-label">Memory Footprint</span>
+          <span class="metric-value" id="metric-ram">&lt; 350 MB</span>
+          <span class="metric-sub">Streaming buffer</span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- VIEW 4: COMPLETION & DOWNLOAD RESULTS (Revealed when 100%) -->
+    <section id="completed-section" class="workspace-section card-surface hidden">
+      <div class="success-banner">
+        <div class="success-icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="success-svg">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </div>
+        <div class="success-text">
+          <h2 class="success-title">Enhancement Finished Successfully!</h2>
+          <p class="success-subtitle">High-frequency details reconstructed, frames multiplied, and audio track synchronized into faststart MP4.</p>
+        </div>
+      </div>
+
+      <!-- Side-by-Side Completed Video Comparison -->
+      <div class="comparison-players-grid">
+        
+        <div class="result-player-col">
+          <div class="player-col-header">
+            <span class="player-col-badge badge-orig-tag">Original Source</span>
+            <span class="player-col-stats" id="complete-src-stats">720p @ 30 FPS</span>
+          </div>
+          <div class="video-container">
+            <video id="complete-src-video" controls preload="metadata" playsinline></video>
+          </div>
+        </div>
+
+        <div class="result-player-col">
+          <div class="player-col-header">
+            <span class="player-col-badge badge-enh-tag">AI Enhanced Video</span>
+            <span class="player-col-stats" id="complete-enh-stats">1080p @ 60 FPS</span>
+          </div>
+          <div class="video-container highlight-container">
+            <video id="complete-enh-video" controls preload="auto" playsinline></video>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Dual Player Sync Playback Bar -->
+      <div class="sync-controls-bar">
+        <button type="button" class="btn btn-ghost btn-sm" id="btn-sync-play">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          <span>Play Videos in Sync</span>
+        </button>
+        <span class="sync-hint">Plays both source and enhanced video simultaneously for instant visual comparison.</span>
+      </div>
+
+      <!-- Output Results Metric Badges -->
+      <div class="output-badges-grid">
+        <div class="output-badge-item">
+          <span class="badge-item-label">Output Resolution</span>
+          <span class="badge-item-value" id="res-output-badge">1920 × 1080</span>
+        </div>
+        <div class="output-badge-item">
+          <span class="badge-item-label">Output Frame Rate</span>
+          <span class="badge-item-value" id="fps-output-badge">60.0 FPS</span>
+        </div>
+        <div class="output-badge-item">
+          <span class="badge-item-label">Total Processing Time</span>
+          <span class="badge-item-value" id="time-output-badge">01:14</span>
+        </div>
+        <div class="output-badge-item">
+          <span class="badge-item-label">Encoding / Container</span>
+          <span class="badge-item-value">H.264 / FastStart MP4</span>
+        </div>
+      </div>
+
+      <!-- Download Action Bar -->
+      <div class="completed-actions-bar">
+        <a id="btn-download-video" href="#" download class="btn btn-primary btn-lg download-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>Download Enhanced Video (.mp4)</span>
+        </a>
+
+        <button type="button" class="btn btn-secondary btn-lg" id="btn-enhance-another">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+            <polyline points="1 4 1 10 7 10"></polyline>
+            <polyline points="23 20 23 14 17 14"></polyline>
+            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
+          </svg>
+          <span>Enhance Another Video</span>
+        </button>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- App Footer -->
+  <footer class="app-footer">
+    <div class="footer-content">
+      <div class="footer-left">
+        <p>AI Video Enhancement Tool &bull; Powered by RealBasicVSR, Real-ESRGAN Compact &amp; RIFE v4</p>
+      </div>
+      <div class="footer-right">
+        <span class="footer-badge">Streaming Generator</span>
+        <span class="footer-badge">Zero Audio Drift</span>
+        <span class="footer-badge">100% Offline CPU</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Main JavaScript App -->
+  <script src="/static/js/app.js" defer></script>
+</body>
+</html>
